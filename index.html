@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculateur solaire – Ton Professionnel en Solaire</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--tx:#222b35;--mut:#5b6773;--navy:#1a3a5c;--or:#f5a623;--bl:#2c6faf;--bd:#cbd2d9;--res:#e6f4ec;--inp:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1720;--card:#18222e;--tx:#e8edf2;--mut:#9aa8b6;--navy:#8fb8e6;--bl:#8fb8e6;--bd:#2c3a49;--res:#16301f;--inp:#101a24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1720;--card:#18222e;--tx:#e8edf2;--mut:#9aa8b6;--navy:#8fb8e6;--bl:#8fb8e6;--bd:#2c3a49;--res:#16301f;--inp:#101a24;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 Georgia,"Times New Roman",serif}
+.top{background:#1a3a5c;color:#fff;padding:22px 18px}
+.top small{color:#f5a623;font-weight:700;letter-spacing:.06em}
+.top h1{margin:4px 0 2px;font-size:24px;line-height:1.2}
+.top p{margin:0;opacity:.9;font-size:15px}
+main{max-width:760px;margin:0 auto;padding:14px}
+section{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin:0 0 14px}
+h2{margin:0 0 10px;font-size:19px;color:var(--navy);border-bottom:2px solid var(--or);padding-bottom:4px}
+label{display:block;font-size:14px;color:var(--mut);margin:8px 0 3px}
+select,input{width:100%;font:inherit;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--inp);color:var(--tx)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:6px;align-items:end;margin-bottom:8px}
+.row .n{grid-column:1/-1}
+.row label{margin:0 0 2px;font-size:12px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:9px 12px}
+button.add{background:var(--or);border-color:var(--or);color:#222;font-weight:700;width:100%;margin-top:4px}
+button.del{padding:9px 11px;color:#c0392b}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.box{background:var(--res);border-left:4px solid #2e8b57;border-radius:6px;padding:10px 12px}
+.box b{display:block;font-size:22px;color:var(--navy)}
+.box span{font-size:13px;color:var(--mut)}
+.wide{grid-column:1/-1}
+.note{font-size:13px;color:var(--mut)}
+.cta{display:block;text-align:center;background:#1a3a5c;color:#fff;text-decoration:none;border-radius:8px;padding:12px;font-weight:700;margin-top:10px}
+@media(max-width:520px){.res{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top"><small>TON PROFESSIONNEL EN SOLAIRE</small><h1>Calculateur de dimensionnement solaire</h1><p>Méthode du module 9 de « La Bible du Solaire »</p></div>
+<main>
+<section>
+<h2>1. Votre projet</h2>
+<div class="g2">
+<div><label for="reg">Région du site</label><select id="reg"></select></div>
+<div><label for="bat">Type de batterie</label><select id="bat"><option value="gel">GEL (PD 50 %, rendement 80 %)</option><option value="li">Lithium (PD 80 %, rendement 90 %)</option></select></div>
+<div><label for="pan">Panneau solaire</label><select id="pan"></select></div>
+<div><label for="nj">Jours d’autonomie</label><input id="nj" type="number" inputmode="decimal" value="1" min="1" step="0.5"></div>
+<div><label for="ond">Rendement de l’onduleur</label><input id="ond" type="number" inputmode="decimal" value="0.9" min="0.5" max="1" step="0.01"></div>
+<div><label for="len">Distance batteries → onduleur (m)</label><input id="len" type="number" inputmode="decimal" value="3" min="0.5" step="0.5"></div>
+</div>
+</section>
+<section>
+<h2>2. Vos appareils</h2>
+<div id="rows"></div>
+<button class="add" onclick="addRow()">+ Ajouter un appareil</button>
+</section>
+<section>
+<h2>3. Résultats</h2>
+<div class="res" id="out"></div>
+<p class="note">Estimation du matériel uniquement (panneaux, batteries, onduleur). Main-d’œuvre, transport, installation, câbles, protections et structures de fixation ne sont pas inclus : contactez-nous pour un devis précis. Résultats calculés avec les équations du manuel ; faites valider votre installation par un professionnel qualifié.</p>
+<a class="cta" href="https://wa.me/237698555229" target="_blank" rel="noopener">Demander un devis précis sur WhatsApp</a>
+</section>
+</main>
+<script>
+const R={"Extrême-Nord (Maroua)":[5.08,.83],"Nord (Garoua)":[5.02,.81],"Adamaoua (Ngaoundéré)":[3.99,.83],"Nord-Ouest (Bamenda)":[3.792,.86],"Sud-Ouest (Buea)":[2.81,.86],"Ouest (Bafoussam)":[4.21,.85],"Littoral (Douala)":[3.39,.84],"Centre (Yaoundé)":[3.64,.85],"Sud (Ebolowa)":[3.79,.85],"Est (Bertoua)":[4.2,.84]};
+const SEC=[1.5,2.5,4,6,10,16,25,35,50,70,95,120];
+let rows=[{n:"Ampoule LED",q:6,p:10,h:5},{n:"Réfrigérateur",q:1,p:150,h:8},{n:"Téléviseur",q:1,p:80,h:4}];
+const $=id=>document.getElementById(id);
+const f=(x,d=0)=>new Intl.NumberFormat("fr-FR",{maximumFractionDigits:d}).format(x);
+$("reg").innerHTML=Object.keys(R).map(k=>`<option${k.startsWith("Centre")?" selected":""}>${k}</option>`).join("");
+const PAN={200:33000,320:48000,400:55000,550:80000,580:80000,650:80000};
+const GEL=[[12,100,90000,"12 V 100 Ah"],[12,150,120000,"12 V 150 Ah"],[12,200,140000,"12 V 200 Ah"]];
+const LI=[[12,100,100000,"12 V 100 Ah"],[12,200,180000,"12 V 200 Ah"],[12,300,260000,"12 V 300 Ah"],[24,208.3,500000,"24 V 5 kWh"],[48,104.2,500000,"48 V 5 kWh"],[48,208.3,1000000,"48 V 10 kWh"],[48,312.5,1200000,"48 V 15 kWh"],[48,416.7,1650000,"48 V 20 kWh"]];
+const INV=[[12,1800,180000,"1,8 kVA"],[12,2300,230000,"2,3 kVA"],[24,4000,300000,"4 kVA"],[48,6000,400000,"6 kVA"],[48,10000,600000,"10 kVA basse fréquence"],[48,12000,600000,"12 kVA"]];
+$("pan").innerHTML=Object.keys(PAN).map(k=>`<option value="${k}"${k==400?" selected":""}>${k} W${k==650?" bifacial":""}</option>`).join("");
+function price(W,Np,Pm,U,Cn,Pond,li){
+  let bat=null,inv=null;
+  for(const [v,ah,pr,lb] of (li?LI:GEL)){if(U%v)continue;const s=U/v,br=Math.ceil(Cn/ah),c=s*br*pr;if(!bat||c<bat.c)bat={c,n:s*br,lb};}
+  for(const [v,w,pr,lb] of INV){if(v!==U||w<Pond)continue;if(!inv||pr<inv.c||(pr===inv.c&&w>inv.w))inv={c:pr,w,lb};}
+  const pP=Np*PAN[Pm],wa="https://wa.me/237698555229?text=",cta=document.querySelector(".cta");
+  if(!bat||!inv){$("out").insertAdjacentHTML("beforeend",'<div class="box wide"><span>Estimation du matériel</span><b>Hors gamme standard</b><span>Contactez-nous pour un devis précis.</span></div>');
+    cta.href=wa+encodeURIComponent("Bonjour, je souhaite un devis. Région : "+$("reg").value+". Consommation : "+f(W)+" Wh/jour. Projet hors gamme standard.");return;}
+  const t=pP+bat.c+inv.c,lo=Math.round(t*.92/5000)*5000,hi=Math.round(t*1.1/5000)*5000;
+  $("out").insertAdjacentHTML("beforeend",'<div class="box wide"><span>Estimation du matériel (panneaux, batteries, onduleur)</span><b>Entre '+f(lo)+' et '+f(hi)+' FCFA</b><span>'+Np+' panneau(x) '+Pm+' W · '+bat.n+' × batterie '+(li?"lithium ":"GEL ")+bat.lb+' · onduleur hybride '+U+' V '+inv.lb+'</span></div>');
+  cta.href=wa+encodeURIComponent("Bonjour, je souhaite un devis. Région : "+$("reg").value+". Consommation : "+f(W)+" Wh/jour. Matériel estimé : "+Np+" panneaux "+Pm+" W, "+bat.n+" × batterie "+(li?"lithium ":"GEL ")+bat.lb+", onduleur hybride "+U+" V "+inv.lb+". Estimation : "+f(lo)+" à "+f(hi)+" FCFA.");
+}
+function draw(){
+  $("rows").innerHTML=rows.map((r,i)=>`<div class="row"><div class="n"><label>Appareil</label><input value="${r.n}" oninput="rows[${i}].n=this.value"></div>
+  <div><label>Qté</label><input type="number" inputmode="decimal" value="${r.q}" min="0" oninput="rows[${i}].q=+this.value;calc()"></div>
+  <div><label>Watts</label><input type="number" inputmode="decimal" value="${r.p}" min="0" oninput="rows[${i}].p=+this.value;calc()"></div>
+  <div><label>Heures/jour</label><input type="number" inputmode="decimal" value="${r.h}" min="0" max="24" step="0.5" oninput="rows[${i}].h=+this.value;calc()"></div>
+  <button class="del" onclick="rows.splice(${i},1);draw();calc()" aria-label="Supprimer">✕</button></div>`).join("");
+}
+function addRow(){rows.push({n:"",q:1,p:0,h:1});draw();}
+function calc(){
+  const W=rows.reduce((s,r)=>s+(r.q||0)*(r.p||0)*(r.h||0),0);
+  const [hsp,z4]=R[$("reg").value],V=.76,eo=+$("ond").value||.9,Pm=+$("pan").value||400,Nj=+$("nj").value||1,L=+$("len").value||1;
+  const li=$("bat").value==="li",PD=li?.8:.5,eb=li?.9:.8;
+  if(!W){$("out").innerHTML='<div class="box wide"><span>Ajoutez au moins un appareil avec sa puissance et ses heures d’usage.</span></div>';return;}
+  const Ppv=W/(hsp*z4*V*eo),Np=Math.ceil(Ppv/Pm),Pins=Np*Pm;
+  const U=Ppv<500?12:Ppv<=2000?24:48;
+  const Cn=W*Nj/(eb*PD*U),Ireg=1.25*Pins/U,Pond=1.25*Pins;
+  const S=2*L*Pond/(.03*U*U*56),Sc=SEC.find(s=>s>=S)||SEC[SEC.length-1];
+  const b=(t,v,s,w)=>`<div class="box${w?" wide":""}"><span>${t}</span><b>${v}</b><span>${s}</span></div>`;
+  $("out").innerHTML=
+   b("Besoin énergétique",f(W)+" Wh/jour","Équations 1 et 2",1)+
+   b("Puissance crête nécessaire",f(Ppv)+" Wc","Équation 3 (HSP "+f(hsp,2)+", Z4 "+f(z4,2)+")")+
+   b("Nombre de panneaux",Np+" × "+f(Pm)+" Wc","Équation 7 : "+f(Pins)+" Wc installés")+
+   b("Tension du système",U+" V","Selon la puissance crête")+
+   b("Capacité des batteries",f(Cn)+" Ah (C10)","Équation 4 : environ "+f(Cn*U/1000,1)+" kWh nominaux")+
+   b("Régulateur de charge (site isolé)",f(Ireg)+" A minimum","Équation 5 : 1,25 × Ppv ÷ Usys")+
+   b("Puissance de l’onduleur",f(Pond)+" W minimum","Équation 6 bis : 1,25 × Ppv installée")+
+   b("Câble batteries → onduleur",Sc+" mm² (calcul : "+f(S,1)+" mm²)","Équation 13, cuivre, sur "+f(L,1)+" m");
+  price(W,Np,Pm,U,Cn,Pond,li);
+}
+["reg","bat","pan","nj","ond","len"].forEach(i=>$(i).addEventListener("input",calc));
+draw();calc();
+</script>
+</body>
+</html>
